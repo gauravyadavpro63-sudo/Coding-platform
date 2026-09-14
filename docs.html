@@ -1,0 +1,470 @@
+Yep Kaneki 😎 — you mean monolithic architecture vs microservices architecture.
+
+The easiest way to understand them is by asking:
+
+How do we divide our backend?
+
+Monolithic architecture
+
+Everything is inside one application.
+
+For your coding platform:
+
+                    ┌──────────────────────────┐
+                    │      Backend Server      │
+                    │                          │
+                    │  Auth                    │
+                    │  Users                   │
+                    │  Problems                │
+                    │  Submissions             │
+                    │  Contests                │
+                    │  Leaderboard             │
+                    │  Admin                   │
+                    │  Notifications            │
+                    │                          │
+                    └────────────┬─────────────┘
+                                 │
+                              Database
+
+You might have:
+
+backend/
+├── auth/
+├── users/
+├── problems/
+├── submissions/
+├── contests/
+└── admin/
+
+They're logically separated in code, but they're still part of one deployed application.
+
+If you run:
+
+npm start
+
+the whole backend starts.
+
+Microservices architecture
+
+Now you split the system into independently running services.
+
+For your platform:
+
+                         API Gateway
+                              │
+           ┌──────────────────┼─────────────────┐
+           │                  │                 │
+           ▼                  ▼                 ▼
+      Auth Service      Problem Service    User Service
+           │                  │                 │
+           ▼                  ▼                 ▼
+        DB/Auth             DB              DB
+           
+                              │
+                              ▼
+                       Submission Service
+                              │
+                              ▼
+                           Queue
+                              │
+                              ▼
+                        Judge Service
+                              │
+                              ▼
+                     Sandbox / Workers
+
+Now each service can potentially have its own deployment, scaling, database, and technology.
+
+For example:
+
+auth-service
+problem-service
+submission-service
+judge-service
+contest-service
+notification-service
+The biggest difference
+
+Imagine your coding platform suddenly gets 100,000 submissions per minute during a contest.
+
+With a monolith:
+
+             Backend
+                │
+      ┌─────────┼─────────┐
+      │         │         │
+     Auth    Problems   Judge
+                         ↑
+                   huge traffic
+
+You may have to scale the whole backend even though the problem service isn't receiving that much traffic.
+
+With microservices:
+
+Auth Service       → 2 instances
+Problem Service    → 3 instances
+Submission Service → 10 instances
+Judge Workers      → 100 instances 🔥
+
+You can scale the expensive part independently.
+
+That's one of the major benefits.
+
+But here's the catch 👀
+
+Microservices are not automatically better.
+
+They introduce a lot of complexity:
+
+Monolith:
+
+Frontend → Backend → DB
+
+Pretty simple.
+
+Microservices:
+
+Frontend
+   ↓
+API Gateway
+   ↓
+Auth Service
+   ↓
+Network
+   ↓
+Problem Service
+   ↓
+Network
+   ↓
+Submission Service
+   ↓
+Queue
+   ↓
+Judge Workers
+   ↓
+Sandbox
+
+Now you're dealing with:
+
+Service-to-service communication
+Network failures
+Queues
+Distributed tracing
+Authentication between services
+Deployment of multiple services
+Monitoring
+Logging
+Data consistency
+Load balancing
+
+So for your first version, I wouldn't start with 10 microservices.
+
+I'd build a modular monolith + separate judge service:
+
+                 Frontend
+                    │
+                    ▼
+             ┌──────────────┐
+             │  API Server  │
+             │              │
+             │ Auth         │
+             │ Users        │
+             │ Problems     │
+             │ Contests     │
+             │ Submissions  │
+             └──────┬───────┘
+                    │
+                    ▼
+                  Queue
+                    │
+                    ▼
+             ┌──────────────┐
+             │ Judge Worker │
+             │              │
+             │ Sandbox      │
+             │ Compiler     │
+             │ Test Runner  │
+             └──────────────┘
+
+This is a really good architecture for your mega project.
+
+You get the simplicity of a monolith for your normal application logic, while keeping the dangerous/heavy code execution system isolated.
+
+Then, if your platform grows, you can extract pieces:
+
+Modular Monolith
+       ↓
+Separate Judge
+       ↓
+Separate Submission Service
+       ↓
+Separate Contest Service
+       ↓
+Microservices
+
+
+########### DOCKER ############
+
+
+Absolutely, Kaneki 😎 Docker is very important for the coding platform you're planning, especially because you'll eventually need to execute users' code safely.
+
+What is Docker?
+
+Docker is a platform that lets you package an application and its dependencies into an isolated environment called a container.
+
+Think of a container as a small, isolated box containing everything your application needs:
+
+┌──────────────────────────────┐
+│        Docker Container      │
+│                              │
+│  Application                 │
+│  Node.js                     │
+│  Dependencies                │
+│  Configuration               │
+│  Libraries                   │
+└──────────────────────────────┘
+
+Instead of saying:
+
+"Install Node 22, these packages, this library, this configuration..."
+
+you can create an image and run it:
+
+docker run my-app
+
+Docker creates a container from that image.
+
+Image vs Container
+
+This distinction is important.
+
+Docker image = blueprint/template.
+
+Image
+ ├── Ubuntu
+ ├── Node.js
+ ├── Application
+ └── Dependencies
+
+Container = running instance of that image.
+
+Image
+   ↓
+docker run
+   ↓
+Container
+
+You can create multiple containers from the same image:
+
+             Docker Image
+                  │
+       ┌──────────┼──────────┐
+       ↓          ↓          ↓
+ Container 1  Container 2  Container 3
+Why is Docker useful?
+
+The first big advantage is isolation.
+
+Suppose your coding platform executes:
+
+while(true) {}
+
+or a program consumes huge amounts of memory.
+
+You don't want that process directly running on your main backend.
+
+Instead:
+
+User Code
+   ↓
+Docker Container
+   ↓
+CPU / Memory / Time limits
+   ↓
+Execute
+   ↓
+Destroy container
+
+That gives you a much safer architecture.
+
+2. Same environment everywhere
+
+Without Docker:
+
+Your laptop
+Node 22
+MongoDB version X
+Redis version Y
+
+Production server
+Node 20
+MongoDB version Z
+Redis version A
+
+And suddenly:
+
+"It works on my machine." 💀
+
+With Docker:
+
+             Same Docker Image
+                    ↓
+       ┌────────────┼────────────┐
+       ↓            ↓            ↓
+    Laptop       Testing      Production
+
+You can reproduce the same environment.
+
+3. Easy deployment
+
+Instead of manually installing everything on a server:
+
+Install Node
+Install dependencies
+Configure environment
+Install libraries
+Configure versions
+...
+
+you can build an image:
+
+docker build -t coding-platform .
+
+and run it:
+
+docker run coding-platform
+4. Different technologies can coexist
+
+Your project might eventually have:
+
+Next.js
+Node.js
+MongoDB
+Redis
+Judge Workers
+C++ compiler
+Python
+Java
+
+Docker can isolate these environments.
+
+For example:
+
+┌───────────────┐
+│ Node Backend  │
+│ Container     │
+└───────────────┘
+
+┌───────────────┐
+│ MongoDB       │
+│ Container     │
+└───────────────┘
+
+┌───────────────┐
+│ Redis         │
+│ Container     │
+└───────────────┘
+
+┌───────────────┐
+│ Judge Worker  │
+│ Container     │
+└───────────────┘
+5. Easy scaling
+
+Suppose your judge receives lots of submissions:
+
+                 Queue
+                   │
+       ┌───────────┼───────────┐
+       ↓           ↓           ↓
+   Worker 1    Worker 2    Worker 3
+
+You can run more containers when demand increases.
+
+6. Easy cleanup
+
+This is another huge advantage for your judge system.
+
+You can create an execution environment:
+
+Create container
+      ↓
+Compile code
+      ↓
+Run tests
+      ↓
+Return result
+      ↓
+Destroy container
+
+The user's program doesn't need to remain on your server indefinitely.
+
+But one VERY important thing
+
+Docker is not a magic security shield.
+
+For a production coding platform, you shouldn't think:
+
+"I'll put user code in Docker, therefore I'm completely safe."
+
+You'd still want things like:
+
+Docker
++
+CPU limits
++
+Memory limits
++
+Process limits
++
+Filesystem restrictions
++
+Network restrictions
++
+Non-root execution
++
+Timeouts
++
+Additional sandboxing/security
+
+Because you're dealing with untrusted code.
+
+For YOUR coding platform
+
+This is where Docker becomes really interesting:
+
+                  User
+                   │
+                   ▼
+              React/Next.js
+                   │
+                   ▼
+              API Server
+                   │
+                   ▼
+                Redis
+                Queue
+                   │
+                   ▼
+             Judge Worker
+                   │
+                   ▼
+          ┌─────────────────┐
+          │ Docker Container│
+          │                 │
+          │ C++ compiler    │
+          │ User code       │
+          │ Test cases      │
+          │ Resource limits │
+          └────────┬────────┘
+                   │
+                   ▼
+                Verdict
+                   │
+                   ▼
+                User
+
+So Docker isn't just something you should learn because it's popular.
+
+Your mega project gives you an actual reason to learn it. 🔥
+

@@ -1,0 +1,30 @@
+{
+  "name": "coding-platform",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/gauravyadavpro63-sudo/Coding-platform#readme",
+  "bugs": {
+    "url": "https://github.com/gauravyadavpro63-sudo/Coding-platform/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gauravyadavpro63-sudo/Coding-platform.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.0",
+    "nodemon": "^3.1.14",
+    "validators": "^0.3.1"
+  }
+}

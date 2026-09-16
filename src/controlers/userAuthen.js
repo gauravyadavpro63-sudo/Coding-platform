@@ -1,5 +1,5 @@
-import User from "../models/user";
-import validate from "../utils/validators";
+import User from "../models/user.js";
+import validate from "../utils/validators.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
@@ -53,4 +53,18 @@ const login=async(req,res)=>{
 //logout
 const logout=async(req,res)=>{
 
+  try{
+  //validate the token
+  //tokken add kar denge redis ke block list me
+  //cookies ko clear kar denge
+  }
+  catch(err){
+   
+  }
+
 }
+
+
+
+
+export {register,login,logout}

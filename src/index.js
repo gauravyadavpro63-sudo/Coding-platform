@@ -2,24 +2,30 @@ import express from "express"
 import 'dotenv/config'
 import Main from "./config/db.js"
 import cookieParser from "cookie-parser"
-import user from "./models/user.js"
+import authRouter from "./routes/userAuth.js"
+import redisClient from "./config/reddis.js"
 
-const app=express()
+const app=express();
 app.use(cookieParser());
 app.use(express.json());
+app.use("/user",authRouter);
 
 
 
 
+const InitalizeConnection=async()=>{
+    try{
+        await Promise.all([Main(),redisClient]);
+        console.log("data base and reddis connnected");
 
+        app.listen(process.env.PORT,()=>{
+            console.log("server listening at port 3000")
+        })
+    }
+    catch(err){
+        console.log(err);
+    }
+}
 
-Main()
-.then(async ()=>{
-    app.listen(process.env.PORT,()=>{
-    console.log("listening at port "+process.env.PORT)
-})
-})
-.catch(()=>{
-    console.log("error occured ");
-})
+InitalizeConnection();
 

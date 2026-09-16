@@ -3,7 +3,7 @@ import validator from "validator";
 
 const validate=(data)=>{
 const mandatoryField=["firstName","email","passward"];
-const isAllowed=mandatoryField.every((k)=Object.keys(data).includes(k))
+const isAllowed=mandatoryField.every((k)=>Object.keys(data).includes(k))
 if(!isAllowed){
   throw new Error("some field missing");
 }

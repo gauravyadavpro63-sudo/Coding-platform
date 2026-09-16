@@ -15,7 +15,7 @@ app.use("/user",authRouter);
 
 const InitalizeConnection=async()=>{
     try{
-        await Promise.all([Main(),redisClient]);
+        await Promise.all([Main(),redisClient.connect()]);
         console.log("data base and reddis connnected");
 
         app.listen(process.env.PORT,()=>{

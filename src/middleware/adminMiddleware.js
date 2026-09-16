@@ -1,13 +1,16 @@
 import jwt from "jsonwebtoken"
 import user from "../models/user.js";
 import redisClient from "../config/reddis.js"
-const userMiddleware=async (req,res,next)=>{
+const adminMiddleware=async (req,res,next)=>{
     try{
       const {token}=req.cookies;
       if(!token){
         throw new Error("Token is not present");
       }
       const payload=jwt.verify(token,process.env.JWT_KEY)
+      if(payload.role!="admin"){
+        throw new Error("Invalid Token")
+      }
       const {email}=payload;
       if(!email){
         throw new Error("invalid token")
@@ -31,4 +34,4 @@ const userMiddleware=async (req,res,next)=>{
     }
 }
 
-export default  userMiddleware
+export default  adminMiddleware

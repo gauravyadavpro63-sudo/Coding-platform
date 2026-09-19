@@ -64,6 +64,16 @@ const problemSchema=new Schema({
         type:Schema.Types.ObjectId,
         ref:"user",  //because id can be same in different collection
         required:true
+    },
+    refereceSolution:{
+        language:{
+            type:String,
+            required:true
+        },
+        completeCode:{
+            type:String,
+            required:true
+        }
     }
 
 })

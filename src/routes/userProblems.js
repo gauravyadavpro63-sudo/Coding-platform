@@ -1,18 +1,19 @@
 import express from "express"
+import adminMiddleware from "../middleware/adminMiddleware";
 
 const problemRouter =express.Router();
 
 //create
-problemRouter.post("/create",problemCreate);
+problemRouter.post("/create",adminMiddleware,createProblem);
 //fetch
-problemRouter.post("/:id",problemFetch);
+problemRouter.post("/:id",getProblemById);
 //fetchall
 problemRouter.get("/",getAllProblem);
 //update
-problemRouter.patch("/:id",problemUpdate);
+problemRouter.patch("/:id",updateProblem);
 //delete
-problemRouter.delete("/:id",problemDelete);
+problemRouter.delete("/:id",deleteProblem);
 //solveproblem
-problemRouter.get(".user,solveProblem");
+problemRouter.get("/user",solvedAllProblembyUser)
 
 

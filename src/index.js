@@ -4,11 +4,13 @@ import Main from "./config/db.js"
 import cookieParser from "cookie-parser"
 import authRouter from "./routes/userAuth.js"
 import redisClient from "./config/reddis.js"
+import problemRouter from "./routes/userProblems.js"
 
 const app=express();
 app.use(cookieParser());
 app.use(express.json());
 app.use("/user",authRouter);
+app.use("/problem",problemRouter);
 
 
 

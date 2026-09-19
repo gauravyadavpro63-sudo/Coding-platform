@@ -2,7 +2,7 @@ import axios from "axios"
 
 const getLanguageById=(lang)=>{
     const language={
-        "c++":54,
+        "cpp":54,
         "java":62,
         "javascript":63
     }
@@ -38,15 +38,6 @@ const getBatchResult = async (tokens) => {
 
     return response.data;
 };
-
-
-
-
-
-
-
-
-
 
 
 

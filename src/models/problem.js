@@ -10,11 +10,11 @@ const problemSchema=new Schema({
         type:String,
         required:true
     },
-    difficulity:{
+    difficulty:{
         type:String,
         enum:["easy","medium","hard"]
     },
-    tag:{
+    tags:{
         type:String,
         enum:["array","linkedlist","graph","dp"],
         required:true
@@ -48,7 +48,7 @@ const problemSchema=new Schema({
             }
         }
     ],
-    startcode:[
+    startCode:[
         {
             language:{
                 type:String,
@@ -65,16 +65,18 @@ const problemSchema=new Schema({
         ref:"user",  //because id can be same in different collection
         required:true
     },
-    refereceSolution:{
+    referenceSolution:[
+    {
         language:{
             type:String,
             required:true
         },
-        completeCode:{
+        completecode:{
             type:String,
             required:true
         }
     }
+]
 
 })
 

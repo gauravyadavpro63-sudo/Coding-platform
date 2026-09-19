@@ -1,5 +1,5 @@
+import Problem  from "../models/problem.js"
 import {getLanguageById,submitBatch,getBatchResult} from "../utils/problemUtility.js"
-
 const createProblem=async(req,res)=>{
 
     const {title,description,difficulty,tags,
@@ -26,10 +26,10 @@ try{
         let result;
         while(true){
             result=await getBatchResult(tokens);
-            const isProcessing=result.submissions.some((submission)=>{//some() "is there at least one submission whose status is 1 or 2?
+            const isProcessing=result.submissions.some((submission)=>//some() "is there at least one submission whose status is 1 or 2?
                 submission.status.id===1||
                 submission.status.id===2
-        })
+        )
         if(!isProcessing){
             break;
         }
@@ -37,16 +37,30 @@ try{
 
         
         }
-
+         for(const test of result.submissions){
+            if(test.status_id!=3){
+              return  res.status(400).send("error occured");
+            }
+         }
 
    }
+//we can now store it in our database;
+await Problem.create({
+    ...req.body,
+    problemCreator:req.result._id
+})
+res.status(201).send("problem saved successully")
   
 
 
 }
 catch(err){
-console.log(err);
+res.status(400).send(err);
+
 }
 
 
 }
+
+
+export default createProblem

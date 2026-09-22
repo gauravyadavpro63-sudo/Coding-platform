@@ -158,7 +158,7 @@ try{
     if(!deletedProblem){
         return res.status(404).send("problem is missing");
     }
-    res.status(200).send(deleteProblem);
+    res.status(200).send(deletedProblem);
 }
 catch(err){
     res.status(500).send(err);
@@ -178,7 +178,7 @@ try{
     if(!id){
         return res.status(400).send("id is missing");
     }
-    const getproblem=await Problem.findById(id);
+    const getproblem=await Problem.findById(id).select("_id title description difficulty tags visibleTestCases startcode referenceSolution");
     if(!getproblem){
         return res.status(404).send("problem is missing");
     }
@@ -193,7 +193,7 @@ catch(err){
 const getAllProblem=async(req,res)=>{
 
 try{
-const getProblem=await Problem.find({});
+const getProblem=await Problem.find({}).select("_id title difficulty tags");
 if(getProblem==0){
     return res.status(404).send("problem is missing");
 }
@@ -209,4 +209,4 @@ catch(err){
 
 
 
-export default {createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem}
+export  {createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem}

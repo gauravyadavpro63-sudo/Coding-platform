@@ -2,10 +2,13 @@ import jwt from "jsonwebtoken"
 import user from "../models/user.js";
 import redisClient from "../config/reddis.js"
 const userMiddleware=async (req,res,next)=>{
+  console.log("hi");
     try{
       const {token}=req.cookies;
+       
       if(!token){
         throw new Error("Token is not present");
+         
       }
       const payload=jwt.verify(token,process.env.JWT_KEY)
       const {email}=payload;

@@ -31,7 +31,10 @@ const userSchema=new Schema({
         default:"user"
     },
     problemSolved:{
-        type:[String],
+        type:[{
+            type:Schema.Types.ObjectId,
+            ref:"problem"
+        }]
     },
     passward:{
         type:String,
@@ -41,5 +44,5 @@ const userSchema=new Schema({
     timestamps:true
 })
 
-const user=mongoose.model("User",userSchema);
+const user=mongoose.model("user",userSchema);
 export default user;

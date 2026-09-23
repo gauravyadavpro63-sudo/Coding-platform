@@ -35,14 +35,28 @@ const getBatchResult = async (tokens) => {
             }
         }
     );
-
+//  console.log(response.data);
     return response.data;
+   
 };
 
 
+const pollBatchResult = async (tokens, { interval = 1000, maxAttempts = 30 } = {}) => {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const result = await getBatchResult(tokens);
+        console.log(result);
+        const isProcessing = result.submissions.some(({ status }) =>
+            status?.id === 1 || status?.id === 2
+        );
 
+        if (!isProcessing) {
+            return result;
+        }
 
+        await new Promise((resolve) => setTimeout(resolve, interval));
+    }
 
-export {getLanguageById,submitBatch,getBatchResult}
+    throw new Error("Code execution timed out");
+};
 
-
+export {getLanguageById,submitBatch,getBatchResult,pollBatchResult}

@@ -1,4 +1,5 @@
 import Problem  from "../models/problem.js"
+import user from "../models/user.js";
 import {getLanguageById,submitBatch,getBatchResult} from "../utils/problemUtility.js"
 
 // ################################################################################################################################################
@@ -190,6 +191,8 @@ catch(err){
 }
 
 
+
+
 const getAllProblem=async(req,res)=>{
 
 try{
@@ -208,5 +211,20 @@ catch(err){
 
 
 
+const solvedAllProblembyUser=async(req,res)=>{
+    try{
+     const  userId=req.result._id;
+     const result=await user.findById(userId).populate({
+        path:"problemSolved",
+        select:"_id title difficulty tags"
+     });   //return ref document of problemSolved 
+     res.send(result.problemSolved)
+    }
+    catch(err){
+     res.send(err);
+    }
+}
 
-export  {createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem}
+
+
+export  {createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem,solvedAllProblembyUser}

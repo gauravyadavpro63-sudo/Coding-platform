@@ -1,6 +1,6 @@
 import express from "express"
 import adminMiddleware from "../middleware/adminMiddleware.js";
-import {createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem} from "../controlers/userProblem.js";
+import {createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem,solvedAllProblembyUser} from "../controlers/userProblem.js";
 import userMiddleware from "../middleware/userMiddleware.js";
 const problemRouter =express.Router();
 
@@ -15,7 +15,7 @@ problemRouter.put("/update/:id",adminMiddleware,updateProblem);
 //delete
 problemRouter.delete("/delete/:id",adminMiddleware,deleteProblem);
 //solveproblem
-// problemRouter.get("problemSolvedByUser",userMiddleware,solvedAllProblembyUser)
+problemRouter.get("/problemSolvedByUser",userMiddleware,solvedAllProblembyUser)
 
 
 export default problemRouter

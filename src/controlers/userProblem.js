@@ -1,4 +1,5 @@
 import Problem  from "../models/problem.js"
+import Submission from "../models/submission.js";
 import user from "../models/user.js";
 import {getLanguageById,submitBatch,getBatchResult} from "../utils/problemUtility.js"
 
@@ -227,4 +228,23 @@ const solvedAllProblembyUser=async(req,res)=>{
 
 
 
-export  {createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem,solvedAllProblembyUser}
+
+const submittedProblem=async(req,res)=>{
+try{
+const userId=req.result._id;
+const problemId=req.params.pid;
+
+const ans=await Submission.find({userId,problemId});
+res.status(200).send(ans);
+}
+catch(err){
+res.send(err);
+}
+}
+
+
+
+
+
+
+export  {createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem,solvedAllProblembyUser,submittedProblem}

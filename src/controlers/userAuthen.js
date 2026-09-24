@@ -1,8 +1,10 @@
 import redisClient from "../config/reddis.js";
+import user from "../models/user.js";
 import User from "../models/user.js";
 import validate from "../utils/validators.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import Submission from "../models/submission.js";
 
 
 //register
@@ -99,4 +101,23 @@ const adminRegister=async(req,res)=>{
 
 
 
-export {register,login,logout,adminRegister}
+// delete profile
+
+
+
+const deleteProfile=async(req,res)=>{
+       try{
+       const userId=req.result._id;
+       await  user.findByIdAndDelete(userId);
+       await Submission.deleteMany({userId});
+       res.status(200).send("deleted succesfully");
+       
+       }
+       catch(err){
+        req.res(err);
+       }
+}
+
+
+
+export {register,login,logout,adminRegister,deleteProfile}

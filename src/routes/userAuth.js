@@ -1,5 +1,5 @@
 import express from "express"
-import {register,login,logout,adminRegister} from "../controlers/userAuthen.js"
+import {register,login,logout,adminRegister,deleteProfile} from "../controlers/userAuthen.js"
 import userMiddleware from "../middleware/userMiddleware.js";
 import adminMiddleware from "../middleware/adminMiddleware.js";
 const authRouter=express.Router();
@@ -12,8 +12,8 @@ authRouter.post("/login",login)
 authRouter.post("/logout",userMiddleware,logout)
 //admin register
 authRouter.post("/admin/register",adminMiddleware,adminRegister);
-//getprofile
-// authRouter.get("/getprofile",getprofile);
+//delete profile
+authRouter.delete("/profile",userMiddleware,deleteProfile);
 
 
 

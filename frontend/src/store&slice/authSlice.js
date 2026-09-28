@@ -1,7 +1,6 @@
 import {createAsyncThunk,createSlice} from "@reduxjs/toolkit"
 import axiosClient from "../utils/axiosClient"
-import { create } from "axios";
-import { logout } from "../../../src/controlers/userAuthen";
+
 
 export const registerUser=createAsyncThunk(
     "auth/register",
@@ -121,7 +120,7 @@ const authSlice=createSlice({
      })
      .addCase(checkAuth.rejected,(state,action)=>{
         state.loading=false;
-        state.isAuthenticated=action.payload?.message||"something went wrong"
+        state.isAuthenticated=false
         state.user=null;
      })
      //logout user

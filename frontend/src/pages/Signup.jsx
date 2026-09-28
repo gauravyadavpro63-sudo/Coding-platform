@@ -2,22 +2,46 @@ import desciplin from "../assets/desciplin.jpg";
 import { useForm } from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod"
 import {z} from "zod"
-import { Link } from "react-router";
+import { Link,useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { registerUser } from "../store&slice/authSlice";
+import { useEffect } from "react";
 
 
 //schema validation
 
 const signUpSchema=z.object({
   firstName:z.string().min(3,"Name should contain atleast 3 char"),
-  emailId:z.email("Please enter valid email"),
-  passward:z.string().min(8,"passward should contain atleast 8 character").regex(/^\S*$/, "Password cannot contain spaces"),
+  email:z.email("Please enter valid email"),
+  passward: z
+  .string()
+  .min(8, "Password should contain at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number")
+  .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
+  .regex(/^\S*$/, "Password cannot contain spaces"),
 })
 
 
 
 function Signup(){
-    const {register,handleSubmit,formState:{errors}}=useForm({resolver:zodResolver(signUpSchema)})
-    
+
+  const dispatch=useDispatch();
+  const navigate=useNavigate();
+  const {isAuthenticated,loading,error}=useSelector((state)=>state.auth);
+  const {register,handleSubmit,formState:{errors}}=useForm({resolver:zodResolver(signUpSchema)})
+ 
+  useEffect(()=>{
+    if(isAuthenticated){
+      navigate('/')
+    }
+  },[isAuthenticated])
+ 
+  const onSubmit=(data)=>{
+      dispatch(registerUser(data));
+    }
     
     return (
         
@@ -30,7 +54,7 @@ function Signup(){
   <span className="text-olive-500">Already have account ? <Link to="/login" className="!text-black underline cursor-pointer">Login now</Link> </span>
 
 
-    <form className="flex w-full max-w-md items-center justify-center flex-col gap-5 "onSubmit={handleSubmit((data)=>console.log(data))}>
+    <form className="flex w-full max-w-md items-center justify-center flex-col gap-5 "onSubmit={handleSubmit(onSubmit)}>
          <div className="w-full text-black" >
           <h1>Name</h1>
         <input {...register("firstName")} placeholder="Enter your name"
@@ -40,9 +64,9 @@ function Signup(){
 
          <div className="w-full text-black">
           <h1>Email</h1>
-        <input {...register("emailId")} placeholder="Enter your Email" 
+        <input {...register("email")} placeholder="Enter your Email" 
          className="w-full border border-gray-400 p-3 text-black"/>
-        {errors.emailId&&(<span className="text-red-800">{errors.emailId.message}</span>)}
+        {errors.email&&(<span className="text-red-800">{errors.email.message}</span>)}
         </div>
 
         <div className="w-full text-black">

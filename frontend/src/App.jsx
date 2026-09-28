@@ -5,6 +5,7 @@ import Signup from "./pages/Signup"
 import { checkAuth } from "./store&slice/authSlice.js"
 import { useDispatch,useSelector } from "react-redux"
 import { useEffect } from "react"
+import { Navigate } from "react-router"
 
 
 
@@ -15,7 +16,7 @@ function App(){
   const dispatch=useDispatch();
 
   useEffect(()=>{
-    dispatch(checkAuth)
+    dispatch(checkAuth())
   },[])
 
 
@@ -23,9 +24,9 @@ function App(){
     <div>
        
       <Routes>
-      <Route path="/" element={<Homepage/>}/>
-      <Route path="/login" element={<Login/>}/>
-      <Route path="/signup" element={<Signup/>}/>
+      <Route path="/" element={isAuthenticated?<Homepage/>:<Navigate to="/signup"></Navigate>}/>
+      <Route path="/login" element={isAuthenticated?<Navigate to="/"></Navigate> :<Login/>}/>
+      <Route path="/signup" element={isAuthenticated?<Navigate to="/"></Navigate> :<Signup/>}/>
 
 
 

@@ -2,22 +2,36 @@ import musashi from "../assets/mushasi.webp";
 import { useForm } from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod"
 import {z} from "zod"
-import {Link} from "react-router"
+import {Link,useNavigate} from "react-router"
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { loginUser } from "../store&slice/authSlice";
 
 
 //schema validation
 
 const loginSchema=z.object({
-  firstName:z.string().min(3,"Name should contain atleast 3 char"),
-  emailId:z.email("Please enter valid email"),
+  email:z.email("Please enter valid email"),
   passward:z.string().min(8,"passward should contain atleast 8 character").regex(/^\S*$/, "Password cannot contain spaces"),
 })
 
 
 
 function Login(){
+    const dispatch=useDispatch()
+    const navigate=useNavigate()
+    const {isAuthenticated,loading,error}=useSelector((state)=>state.auth);
     const {register,handleSubmit,formState:{errors}}=useForm({resolver:zodResolver(loginSchema)})
-    
+   
+    useEffect(()=>{
+      if(isAuthenticated){
+        navigate("/");
+      }
+    },[isAuthenticated])
+
+    const onSubmit=(data)=>{
+      dispatch(loginUser(data))
+    }
     
     return (
         
@@ -30,14 +44,14 @@ function Login(){
   <span className="text-olive-500">Dont have account ? <Link to="/signup"className="!text-black underline cursor-pointer">Register now</Link> </span>
   
 
-    <form className="flex w-full max-w-md items-center justify-center flex-col gap-5 "onSubmit={handleSubmit((data)=>console.log(data))}>
+    <form className="flex w-full max-w-md items-center justify-center flex-col gap-5 "onSubmit={handleSubmit(onSubmit)}>
        
 
          <div className="w-full text-black">
           <h1>Email</h1>
-        <input {...register("emailId")} placeholder="Enter your Email" 
+        <input {...register("email")} placeholder="Enter your Email" 
          className="w-full border border-gray-400 p-3 text-black"/>
-        {errors.emailId&&(<span className="text-red-800">{errors.emailId.message}</span>)}
+        {errors.email&&(<span className="text-red-800">{errors.email.message}</span>)}
         </div>
 
         <div className="w-full text-black">

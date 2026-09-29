@@ -6,28 +6,44 @@ import { checkAuth } from "./store&slice/authSlice.js"
 import { useDispatch,useSelector } from "react-redux"
 import { useEffect } from "react"
 import { Navigate } from "react-router"
-
+import Discuss from "./pages/Discuss.jsx"
+import Contests from "./pages/Contests.jsx"
+import Mainlayout from "./pages/Mainlayout.jsx"
+import Problem from "./pages/Problem.jsx"
 
 
 function App(){
 
   //isAuthenticated code
-  const {isAuthenticated}=useSelector((state)=>state.auth)
+  const {isAuthenticated,loading}=useSelector((state)=>state.auth)
   const dispatch=useDispatch();
 
   useEffect(()=>{
     dispatch(checkAuth())
   },[])
 
+  if(loading){
+    return (
+      
+      <div className="min-h-screen flex items-center justify-center">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    )
+  }
 
   return(
     <div>
        
       <Routes>
+      <Route element={<Mainlayout/>}>
       <Route path="/" element={isAuthenticated?<Homepage/>:<Navigate to="/signup"></Navigate>}/>
+      <Route path="/problem" element={<Problem/>}></Route>
+      <Route path="/discuss" element={<Discuss/>}></Route>
+      <Route path="/contests" element={<Contests/>}></Route>
+      </Route>
+
       <Route path="/login" element={isAuthenticated?<Navigate to="/"></Navigate> :<Login/>}/>
       <Route path="/signup" element={isAuthenticated?<Navigate to="/"></Navigate> :<Signup/>}/>
-
 
 
       </Routes>

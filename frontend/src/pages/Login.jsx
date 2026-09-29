@@ -77,7 +77,13 @@ function Login(){
         >{showPassward?<EyeOff size={25}/>:<Eye size={25}/>} </button>
         </div>
 
-        <button className="btn btn-wide">Login</button>
+
+         {error&&(
+          <p className="text-red-600">{error}</p>
+        )}
+              
+                      {/* submit button  */}
+        <button className={`btn btn-primary w-full ${loading ? "loading" : ""}`} disabled={loading}>Login</button>
     </form>
 
   </div> 

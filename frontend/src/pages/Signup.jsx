@@ -9,6 +9,7 @@ import { registerUser } from "../store&slice/authSlice";
 import { useEffect,useState } from "react";
 import {Eye,EyeOff} from "lucide-react"
 
+
 //schema validation
 
 const signUpSchema=z.object({
@@ -84,7 +85,12 @@ function Signup(){
         >{showPassward?<EyeOff size={25}/>:<Eye size={25}/>} </button>
         </div>
 
-        <button className="btn btn-wide">Sign up</button>
+        {error&&(
+          <p className="text-red-600">{error}</p>
+        )}
+                 
+                 {/* submite button */}
+        <button className={`btn btn-primary w-full ${loading ? "loading" : ""}`} disabled={loading}>Sign up</button>
     </form>
 
   </div>

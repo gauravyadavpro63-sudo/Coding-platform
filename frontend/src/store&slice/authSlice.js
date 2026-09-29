@@ -10,7 +10,7 @@ export const registerUser=createAsyncThunk(
          return response.data.user
         }
         catch(error){
-         return rejectWithValue(error);            
+         return rejectWithValue(error?.response.data);            
         }
     }
 )
@@ -25,7 +25,8 @@ export const loginUser=createAsyncThunk(
            return response.data.user;
         }
         catch(error){
-          return rejectWithValue(error)
+                         
+          return rejectWithValue(error.response?.data)
         }
     }
 )
@@ -40,7 +41,8 @@ export const checkAuth=createAsyncThunk(
           return data.user;
         }
         catch(error){
-         return rejectWithValue(error);
+ 
+         return rejectWithValue(error?.response.data);
         }
     }
 )
@@ -104,7 +106,7 @@ const authSlice=createSlice({
      })
      .addCase(loginUser.rejected,(state,action)=>{
         state.loading=false;
-        state.error=action.payload?.message||"something went wrong";
+        state.error=action.payload||"something went wrong";
         state.isAuthenticated=false;
         state.user=null;
      })

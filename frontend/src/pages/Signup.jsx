@@ -6,8 +6,8 @@ import { Link,useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { registerUser } from "../store&slice/authSlice";
-import { useEffect } from "react";
-
+import { useEffect,useState } from "react";
+import {Eye,EyeOff} from "lucide-react"
 
 //schema validation
 
@@ -30,6 +30,7 @@ function Signup(){
 
   const dispatch=useDispatch();
   const navigate=useNavigate();
+  const [showPassward,setShowPassward]=useState(false)
   const {isAuthenticated,loading,error}=useSelector((state)=>state.auth);
   const {register,handleSubmit,formState:{errors}}=useForm({resolver:zodResolver(signUpSchema)})
  
@@ -69,11 +70,18 @@ function Signup(){
         {errors.email&&(<span className="text-red-800">{errors.email.message}</span>)}
         </div>
 
-        <div className="w-full text-black">
+        <div className="w-full text-black relative">
           <h1>Passward</h1>
         <input {...register("passward")} placeholder="Enter your passward" 
+         type={showPassward?"text":"password"}
          className="w-full border border-gray-400 p-3 text-black"/>
         {errors.passward&&(<span className="text-red-800">{errors.passward.message}</span>)}
+
+           <button 
+        type="button"
+        onClick={()=>setShowPassward(prev=>!prev)}
+        className="absolute right-3 top-[60%]   -translate-y-1/2"        
+        >{showPassward?<EyeOff size={25}/>:<Eye size={25}/>} </button>
         </div>
 
         <button className="btn btn-wide">Sign up</button>

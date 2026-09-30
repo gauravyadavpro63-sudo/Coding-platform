@@ -6,8 +6,16 @@ import authRouter from "./routes/userAuth.js"
 import redisClient from "./config/reddis.js"
 import problemRouter from "./routes/userProblems.js"
 import submitRouter from "./routes/userSubmit.js"
+import cors from "cors"
 
 const app=express();
+
+app.use(cors({
+    origin:"http://localhost:5173",
+    credentials:true
+}))
+
+
 app.use(cookieParser());
 app.use(express.json());
 app.use("/user",authRouter);

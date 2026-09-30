@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken"
 import user from "../models/user.js";
 import redisClient from "../config/reddis.js"
 const userMiddleware=async (req,res,next)=>{
-  console.log("hi");
     try{
       const {token}=req.cookies;
        

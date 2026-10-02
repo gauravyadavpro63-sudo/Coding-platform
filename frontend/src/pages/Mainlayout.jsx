@@ -1,4 +1,4 @@
-import {Code2,FileCode2,Trophy,MessageSquare,House} from "lucide-react"
+import {Code2,FileCode2,Trophy,MessageSquare,House,UserStar} from "lucide-react"
 import { Link } from "react-router"
 import { Outlet } from "react-router"
 import { useDispatch,useSelector } from "react-redux"
@@ -9,7 +9,8 @@ import { logoutUser } from "../store&slice/authSlice"
 
 
 function Mainlayout(){
-const name=useSelector((store)=>store.auth.user?.firstName)
+// const name=useSelector((store)=>store.auth.user?.firstName)
+const {user} =useSelector((store)=>store.auth)
 const dispatch=useDispatch();
 
 return(
@@ -29,6 +30,19 @@ return(
                    {/* Navigation */}
 
                    <nav className="flex h-full items-center  gap-15">
+
+                {user?.role==="admin"&&(
+                  <>
+                        {/* Admin   */}
+                    <Link to={"/admin"} className="relative flex h-full items-center gap-2 ">
+                        <UserStar size={21}/>
+                        <span className="text-[16px] font-medium">Admin</span>
+                        
+                    </Link>
+                    </>
+                )}
+                
+
 
                        {/* Homepage  */}
                     <Link to={"/"} className="relative flex h-full items-center gap-2 ">
@@ -77,12 +91,12 @@ return(
   >
     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800">
       <span className="text-sm font-semibold ">
-        {name?.charAt(0).toUpperCase()}
+        {user?.firstName?.charAt(0).toUpperCase()}
       </span>
     </div>
     <span className="font-medium ">
         
-      {name}
+      {user?.firstName}
     </span>
   </div>
 

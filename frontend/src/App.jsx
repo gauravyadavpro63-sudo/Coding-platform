@@ -10,12 +10,13 @@ import Discuss from "./pages/Discuss.jsx"
 import Contests from "./pages/Contests.jsx"
 import Mainlayout from "./pages/Mainlayout.jsx"
 import Problem from "./pages/Problem.jsx"
+import AdminDashboard from "./admin/adminDashboard.jsx"
 
 
 function App(){
 
   //isAuthenticated code
-  const {isAuthenticated,loading}=useSelector((state)=>state.auth)
+  const {isAuthenticated,loading,user}=useSelector((state)=>state.auth)
   const dispatch=useDispatch();
 
   useEffect(()=>{
@@ -31,6 +32,7 @@ function App(){
     )
   }
 
+
   return(
     <div>
        
@@ -40,10 +42,13 @@ function App(){
       <Route path="/problem" element={<Problem/>}></Route>
       <Route path="/discuss" element={<Discuss/>}></Route>
       <Route path="/contests" element={<Contests/>}></Route>
+      <Route path="/admin" element={user?.role==="admin"?<AdminDashboard/> : <Navigate to="/"></Navigate>}></Route>
+
       </Route>
 
       <Route path="/login" element={isAuthenticated?<Navigate to="/"></Navigate> :<Login/>}/>
       <Route path="/signup" element={isAuthenticated?<Navigate to="/"></Navigate> :<Signup/>}/>
+       
 
 
       </Routes>

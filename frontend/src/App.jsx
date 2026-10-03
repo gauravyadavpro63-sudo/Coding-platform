@@ -11,6 +11,13 @@ import Contests from "./pages/Contests.jsx"
 import Mainlayout from "./pages/Mainlayout.jsx"
 import Problem from "./pages/Problem.jsx"
 import AdminDashboard from "./admin/adminDashboard.jsx"
+import CreateProblem from "./admin/createProblme.jsx"
+import UpdateProblem from "./admin/updateProblem.jsx"
+import DeleteProblem from "./admin/deleteProblem.jsx"
+import UpdateProblemId from "./admin/updateProblemId.jsx"
+
+
+
 
 
 function App(){
@@ -43,7 +50,10 @@ function App(){
       <Route path="/discuss" element={<Discuss/>}></Route>
       <Route path="/contests" element={<Contests/>}></Route>
       <Route path="/admin" element={user?.role==="admin"?<AdminDashboard/> : <Navigate to="/"></Navigate>}></Route>
-
+      <Route path="/admin/create" element={<CreateProblem/>}></Route>
+      <Route path="/admin/update" element={<UpdateProblem/>}></Route>
+      <Route path="/admin/delete" element={<DeleteProblem/>}></Route>
+      <Route path="/admin/update/:id" element={<UpdateProblemId/>}></Route>
       </Route>
 
       <Route path="/login" element={isAuthenticated?<Navigate to="/"></Navigate> :<Login/>}/>

@@ -2,10 +2,10 @@ import axiosClient from "../utils/axiosClient";
 
 
 
-async function Fetchallproblem(page=1){
+async function Fetchallproblem(page=1,search=""){
 
  
-        const response=await axiosClient.get(`/problem/getAllProblem?page=${page}`)
+        const response=await axiosClient.get(`/problem/getAllProblem?page=${page}&search=${search}`)
         return response.data
       
 }

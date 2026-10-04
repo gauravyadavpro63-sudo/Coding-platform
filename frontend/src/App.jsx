@@ -15,6 +15,7 @@ import CreateProblem from "./admin/createProblme.jsx"
 import UpdateProblem from "./admin/updateProblem.jsx"
 import DeleteProblem from "./admin/deleteProblem.jsx"
 import UpdateProblemId from "./admin/updateProblemId.jsx"
+import Solve from "./pages/Solve.jsx"
 
 
 
@@ -54,6 +55,7 @@ function App(){
       <Route path="/admin/update" element={<UpdateProblem/>}></Route>
       <Route path="/admin/delete" element={<DeleteProblem/>}></Route>
       <Route path="/admin/update/:id" element={<UpdateProblemId/>}></Route>
+      <Route path="/solve/:id" element={<Solve/>}></Route>
       </Route>
 
       <Route path="/login" element={isAuthenticated?<Navigate to="/"></Navigate> :<Login/>}/>

@@ -1,7 +1,8 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { useParams } from "react-router"
 import { FetchProblemById } from "../api/problems";
+import { RunCodeById } from "../api/problems";
 
 import {
   ChevronDown,
@@ -15,51 +16,79 @@ import {
 const Solve = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [language, setLanguage] = useState("cpp");
-  const [problem,setProblem]=useState(null);
-  const [loading,setLoading]=useState(true);
-  const [editorCode,setEditorCode]=useState("")
-  const [selectedTestCase,setSelectedTestCase]=useState(0);
-  
-    const { id } = useParams();
+  const [problem, setProblem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [editorCode, setEditorCode] = useState("")
+  const [selectedTestCase, setSelectedTestCase] = useState(0);
+  const [runResult, setRunResult] = useState(null)
+  const [isRunning, setIsRunning] = useState(false);
+
+  const { id } = useParams();
 
 
-  
+  const handleRun = async () => {
+    try {
+      setIsRunning(true);
+      setRunResult(null);
+
+      const data = {
+        language: language,
+        code: editorCode
+      }
+    
+      const response = await RunCodeById(data, id)
+      // console.log(response.data)
+
+      setRunResult(response?.data?.submissions);
+    }
+    catch (error) {
+      console.log(error);
+
+      setRunResult({
+        status: "error",
+        output: error.response?.data?.message || "something went wrong"
+      })
+    }
+    finally {
+      setIsRunning(false);
+    }
+  }
 
 
-  const getInitialCode=(selectedLanguage)=>{
-    if(!problem?.startCode) return "";
+  const getInitialCode = (selectedLanguage) => {
+    if (!problem?.startCode) return "";
 
-    const selectedCode=problem?.startCode.find(
-      (item)=>item.language===selectedLanguage
+    const selectedCode = problem?.startCode.find(
+      (item) => item.language === selectedLanguage
     );
-    return selectedCode?.initialCode 
+    return selectedCode?.initialCode
   }
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    const ProblemId=async ()=>{
-    try{
-     const data = await FetchProblemById(id)
-     setProblem(data);
-     
+    const ProblemId = async () => {
+      try {
+        const data = await FetchProblemById(id)
+        setProblem(data);
+
+      }
+      catch (error) {
+        console.log(error);
+      }
+      finally {
+        setLoading(false);
+      }
     }
-    catch(error){
-     console.log(error);
-    }
-    finally{
-      setLoading(false);
-    }
-  }
 
-  ProblemId();
-  },[id])
+    ProblemId();
+  }, [id])
 
 
-  useEffect(()=>{
-    if(problem){
+  useEffect(() => {
+    if (problem) {
       setEditorCode(getInitialCode("cpp"))
     }
-  },[problem])
+  }, [problem])
 
   const tabs = [
     { id: "description", label: "Description" },
@@ -70,9 +99,8 @@ const Solve = () => {
 
 
 
-console.log(problem);
   return (
-    <div className="h-screen bg-black text-white flex flex-col overflow-hidden">
+    <div className="h-screen bg-black text-white flex flex-col ">
 
       {/* Header */}
       <header className="h-14 border-b border-zinc-800 flex items-center justify-between px-5 shrink-0">
@@ -85,9 +113,34 @@ console.log(problem);
 
           <span className="text-sm text-zinc-300">
             {problem?.title}
-         
+
           </span>
         </div>
+
+
+
+        {/* Bottom Actions */}
+        <div className="h-16 border-t border-zinc-800 flex items-center justify-end gap-3 px-4 shrink-0">
+
+          <button
+            onClick={handleRun}
+            disabled={isRunning}
+            className="flex items-center gap-2 px-4 py-2 rounded-md border border-zinc-700 text-sm text-zinc-300 hover:bg-zinc-900 transition"
+          >
+            <Play size={16} />
+            {isRunning ? "Running...bro" : "Run Code"}
+          </button>
+
+          <button
+            className="flex items-center gap-2 px-5 py-2 rounded-md bg-orange-500 hover:bg-orange-600 text-sm font-medium transition"
+          >
+            <Send size={16} />
+            Submit
+          </button>
+
+        </div>
+
+
 
         <div className="flex items-center gap-5 text-sm text-zinc-400">
           <div className="flex items-center gap-2">
@@ -116,8 +169,8 @@ console.log(problem);
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 h-full text-sm transition ${activeTab === tab.id
-                    ? "text-white border-b-2 border-orange-500"
-                    : "text-zinc-500 hover:text-zinc-300"
+                  ? "text-white border-b-2 border-orange-500"
+                  : "text-zinc-500 hover:text-zinc-300"
                   }`}
               >
                 {tab.label}
@@ -146,44 +199,44 @@ console.log(problem);
                       {problem?.tags}
                     </span>
 
-                 
+
                   </div>
                 </div>
 
                 <div className="text-sm text-zinc-300 leading-7">
-                {problem?.description}
+                  {problem?.description}
                 </div>
 
                 <div>
-                 {problem?.visibleTestCases?.map((testCase, index) => (
-  <div
-    key={index}
-    className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 mb-4"
-  >
-    <p className="text-sm text-zinc-400 mb-2">
-      Example {index + 1}
-    </p>
+                  {problem?.visibleTestCases?.map((testCase, index) => (
+                    <div
+                      key={index}
+                      className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 mb-4"
+                    >
+                      <p className="text-sm text-zinc-400 mb-2">
+                        Example {index + 1}
+                      </p>
 
-    <div className="space-y-2 font-mono text-sm">
-      <p>
-        <span className="text-zinc-500">Input:</span>{" "}
-        {testCase.input}
-      </p>
+                      <div className="space-y-2 font-mono text-sm">
+                        <p>
+                          <span className="text-zinc-500">Input:</span>{" "}
+                          {testCase.input}
+                        </p>
 
-      <p>
-        <span className="text-zinc-500">Output:</span>{" "}
-        {testCase.output}
-      </p>
+                        <p>
+                          <span className="text-zinc-500">Output:</span>{" "}
+                          {testCase.output}
+                        </p>
 
-      {testCase.explanation && (
-        <p>
-          <span className="text-zinc-500">Explanation:</span>{" "}
-          {testCase.explanation}
-        </p>
-      )}
-    </div>
-  </div>
-))}
+                        {testCase.explanation && (
+                          <p>
+                            <span className="text-zinc-500">Explanation:</span>{" "}
+                            {testCase.explanation}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 <div>
@@ -286,7 +339,7 @@ for(int i = 0; i < nums.size(); i++) {
               <select
                 value={language}
                 onChange={(e) => {
-                  const newLanguage=e.target.value;
+                  const newLanguage = e.target.value;
                   setLanguage(newLanguage)
                   setEditorCode(getInitialCode(newLanguage))
                 }}
@@ -316,10 +369,10 @@ for(int i = 0; i < nums.size(); i++) {
               height="100%"
               theme="vs-dark"
               language={
-                language==="cpp"?"cpp":language==="java"?"java":"javascript"
+                language === "cpp" ? "cpp" : language === "java" ? "java" : "javascript"
               }
               value={editorCode}
-              onChange={(value)=>setEditorCode(value||"")}
+              onChange={(value) => setEditorCode(value || "")}
               options={{
                 minimap: {
                   enabled: false,
@@ -335,31 +388,89 @@ for(int i = 0; i < nums.size(); i++) {
 
 
           {/* Test Cases */}
-          <div className="h-40 border-t border-zinc-800 bg-zinc-950 shrink-0">
-            {/* Test case Header  */}
-            
+          <div className="h-60 border-t border-zinc-800 bg-zinc-950 shrink-0">
+
+            {/* Test Case Header */}
+            <div className="h-11 border-b border-zinc-800 flex items-center px-4">
+              <span className="text-sm font-medium">
+                Test Cases
+              </span>
+            </div>
+
+            {/* Test Case Buttons */}
+            <div className="flex gap-2 px-4 pt-3">
+              {problem?.visibleTestCases?.map((testCase, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedTestCase(index)}
+                  className={`px-3 py-1.5 rounded-md text-sm transition ${selectedTestCase === index
+                    ? "bg-zinc-800 text-white"
+                    : "text-zinc-500 hover:text-zinc-300"
+                    }`}
+                >
+                  Case {index + 1}
+                </button>
+              ))}
+            </div>
+
+            {/* Selected Test Case */}
+            {problem?.visibleTestCases?.[selectedTestCase] && (
+              <div className="px-4 pt-3">
+                <p className="text-xs text-zinc-500 mb-1">
+                  Input
+                </p>
+
+                <div className="bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 font-mono text-sm text-zinc-300">
+                  {problem.visibleTestCases[selectedTestCase].input}
+                </div>
+
+
+
+                {/* output  */}
+{runResult?.length > 0 && (
+  <div className="mt-2 space-y-1.5">
+    {runResult.map((result, index) => (
+      <div
+        key={index}
+        className="bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-zinc-400">
+            Case {index + 1}
+          </span>
+
+          <span
+            className={`text-xs font-medium ${
+              result.status?.description === "Accepted"
+                ? "text-green-400"
+                : "text-red-400"
+            }`}
+          >
+            {result.status?.description || "Unknown"}
+          </span>
+        </div>
+
+        <pre className="mt-1 bg-black rounded px-2 py-1.5 text-xs text-zinc-400 font-mono whitespace-pre-wrap max-h-12 overflow-y-auto">
+          {result.compile_output || result.stderr ||result.stdout|| "No output"}
+        </pre>
+      </div>
+    ))}
+  </div>
+)}
+
+
+
+
+              </div>
+            )}
+
 
           </div>
 
 
-          {/* Bottom Actions */}
-          <div className="h-16 border-t border-zinc-800 flex items-center justify-end gap-3 px-4 shrink-0">
 
-            <button
-              className="flex items-center gap-2 px-4 py-2 rounded-md border border-zinc-700 text-sm text-zinc-300 hover:bg-zinc-900 transition"
-            >
-              <Play size={16} />
-              Run Code
-            </button>
 
-            <button
-              className="flex items-center gap-2 px-5 py-2 rounded-md bg-orange-500 hover:bg-orange-600 text-sm font-medium transition"
-            >
-              <Send size={16} />
-              Submit
-            </button>
 
-          </div>
 
         </section>
 

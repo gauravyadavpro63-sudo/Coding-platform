@@ -49,6 +49,13 @@ async function DeleteProblemById(id){
 }
 
 
+async function RunCodeById(data,id){
+
+        const response =await axiosClient.post(`/submission/runcode/${id}`,data)
+        return response;
+}
+
+
 
 
 
@@ -57,4 +64,5 @@ export {Fetchallproblem,
         FetchCreateProblem,
         UpdateProblemId,
         FetchProblemById,
-        DeleteProblemById}
+        DeleteProblemById,
+        RunCodeById}

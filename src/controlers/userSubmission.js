@@ -141,14 +141,12 @@ const languageId=getLanguageById(language);
          stdin:input,
          expected_output:output
     }))
-
+    
     const submitResult=await submitBatch(submissions);
+//    console.log(submitResult);
     const tokens=submitResult.map((result)=>result.token);
      const result=await pollBatchResult(tokens);
 
-    
-  
-    
 
       res.status(201).send(result)
 

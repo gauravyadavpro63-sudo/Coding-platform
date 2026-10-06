@@ -11,15 +11,19 @@ const getLanguageById=(lang)=>{
 
 
 const submitBatch=async(submissions)=>{
-
+  
+   
     const response = await axios.post(
         "http://localhost:2358/submissions/batch",
         {
             submissions
         }
     );
+  
+//   console.log(response.data);
+    return response.data
 
-    return response.data;
+   
 
 }
 
@@ -31,7 +35,8 @@ const getBatchResult = async (tokens) => {
         {
             params: {
                 tokens: tokens.join(","),
-                fields: "*"
+                fields: "*",
+                base64_encoded:true
             }
         }
     );
@@ -44,7 +49,7 @@ const getBatchResult = async (tokens) => {
 const pollBatchResult = async (tokens, { interval = 1000, maxAttempts = 30 } = {}) => {
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         const result = await getBatchResult(tokens);
-        console.log(result);
+        // console.log(result);
         const isProcessing = result.submissions.some(({ status }) =>
             status?.id === 1 || status?.id === 2
         );

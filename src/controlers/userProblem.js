@@ -133,7 +133,7 @@ const updateProblem=async(req,res)=>{
    }
 
 
-const newProblem=await Problem.findByIdAndUpdate(id,{...req.body,  problemCreator: DsaProblem.problemCreator},{runValidators:true,new:true});
+const newProblem=await Problem.findByIdAndUpdate(id,{...req.body,  problemCreator: DsaProblem.problemCreator},{runValidators:true,returnDocument: "after"});
 res.status(200).send(newProblem);
     }
     catch(err){
@@ -174,13 +174,14 @@ catch(err){
 
 
 const getProblemById=async(req,res)=>{
+    
 
 const  {id}=req.params;
 try{
     if(!id){
         return res.status(400).send("id is missing");
     }
-    const getproblem=await Problem.findById(id).select("_id title description difficulty tags visibleTestCases startcode referenceSolution");
+    const getproblem=await Problem.findById(id).select("_id title description difficulty tags visibleTestCases startCode hiddenTestCases referenceSolution");
     if(!getproblem){
         return res.status(404).send("problem is missing");
     }
@@ -197,15 +198,36 @@ catch(err){
 const getAllProblem=async(req,res)=>{
 
 try{
-const getProblem=await Problem.find({}).select("_id title difficulty tags");
+    const page=Number(req.query.page)||1;
+    const search =req.query.search||"";
+
+    const limit=5;
+    const skip=(page-1)*limit
+
+const filter=search
+        ?{
+            $or:[
+                {title:{$regex:search, $options:"i"}},
+                {tags: {$regex:search,$options:"i"}}
+            ]
+        }:{};
+
+
+const getProblem=await Problem.find(filter).select("_id title difficulty tags").skip(skip).limit(limit)
+const totalProblems=await Problem.countDocuments();
 if(getProblem.length===0){
     return res.status(404).send("problem is missing");
 }
-res.status(200).send(getProblem);
+res.status(200).json({
+    getProblem,
+    currentPage:page,
+    totalPages:Math.ceil(totalProblems/limit),
+    totalProblems
+})
 
 }
 catch(err){
-  res.send(err);
+  res.status(500).send(err);
 }
 
 }
@@ -225,6 +247,7 @@ const solvedAllProblembyUser=async(req,res)=>{
      res.send(err);
     }
 }
+
 
 
 

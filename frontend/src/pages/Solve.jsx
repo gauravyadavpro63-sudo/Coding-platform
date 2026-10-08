@@ -3,6 +3,9 @@ import Editor from "@monaco-editor/react";
 import { useParams } from "react-router"
 import { FetchProblemById } from "../api/problems";
 import { RunCodeById } from "../api/problems";
+import { SubmitCodeById } from "../api/problems";
+import ProblemSubmitedByUser from "../components/solution";
+import AIChat from "../components/ai";
 
 import {
   ChevronDown,
@@ -22,8 +25,45 @@ const Solve = () => {
   const [selectedTestCase, setSelectedTestCase] = useState(0);
   const [runResult, setRunResult] = useState(null)
   const [isRunning, setIsRunning] = useState(false);
+  const [isSubmitting,setIsSubmitting]=useState(false);
+  const [submitResult,setSubmitResult]=useState(null);
 
   const { id } = useParams();
+
+
+
+  const handleSubmit=async()=>{
+
+   try{
+     setIsSubmitting(true);
+     setSubmitResult(null);
+
+     const data={
+      language:language,
+      code:editorCode
+     }
+
+     const response=await SubmitCodeById(data,id);
+     console.log(response?.data);
+     setSubmitResult(response?.data);
+     
+   }
+   catch(error){
+    setSubmitResult({
+      status:"error",
+      message:error?.response?.data?.message ||"something went wrong"
+    });
+   }
+   finally{
+    setIsSubmitting(false);
+
+   }
+
+
+  };
+
+
+
 
 
   const handleRun = async () => {
@@ -37,7 +77,7 @@ const Solve = () => {
       }
     
       const response = await RunCodeById(data, id)
-      // console.log(response.data)
+    
 
       setRunResult(response?.data?.submissions);
     }
@@ -95,10 +135,11 @@ const Solve = () => {
     { id: "editorial", label: "Editorial" },
     { id: "solution", label: "Solution" },
     { id: "submissions", label: "Submissions" },
+    { id: "AIChat", label:"AIChat"}
   ];
 
 
-
+// console.log(runResult);
   return (
     <div className="h-screen bg-black text-white flex flex-col ">
 
@@ -132,10 +173,13 @@ const Solve = () => {
           </button>
 
           <button
+          onClick={handleSubmit}
+          
+          disabled={isSubmitting}
             className="flex items-center gap-2 px-5 py-2 rounded-md bg-orange-500 hover:bg-orange-600 text-sm font-medium transition"
           >
             <Send size={16} />
-            Submit
+            {isSubmitting?"Hold on...":"Submit"}
           </button>
 
         </div>
@@ -264,7 +308,7 @@ const Solve = () => {
                 <p className="text-zinc-400 leading-7">
                   The optimal approach is to use a hash map to store
                   previously visited values and check whether the
-                  required complement already exists.
+                  required complement already exists.   
                 </p>
               </div>
             )}
@@ -298,33 +342,31 @@ for(int i = 0; i < nums.size(); i++) {
                   Submissions
                 </h1>
 
-                <div className="border border-zinc-800 rounded-lg overflow-hidden">
+                
+                <ProblemSubmitedByUser id={id}/>
 
-                  <div className="grid grid-cols-3 px-4 py-3 bg-zinc-900 text-xs text-zinc-500">
-                    <span>Status</span>
-                    <span>Language</span>
-                    <span>Time</span>
-                  </div>
+                
+              </div>
+            )}
 
-                  <div className="grid grid-cols-3 px-4 py-4 text-sm">
-                    <span className="text-green-400">
-                      Accepted
-                    </span>
 
-                    <span className="text-zinc-300">
-                      C++
-                    </span>
+            
+            {activeTab === "AIChat" && (
+              <div>
+                <h1 className="text-2xl font-bold mb-5">
+                  AIChat
+                </h1>
 
-                    <span className="text-zinc-500">
-                      42 ms
-                    </span>
-                  </div>
+                
+                <AIChat/>
 
-                </div>
+                
               </div>
             )}
 
           </div>
+
+
         </section>
 
 
@@ -426,7 +468,7 @@ for(int i = 0; i < nums.size(); i++) {
 
 
 
-                {/* output  */}
+                {/* output  runcode*/}
 {runResult?.length > 0 && (
   <div className="mt-2 space-y-1.5">
     {runResult.map((result, index) => (
@@ -451,7 +493,7 @@ for(int i = 0; i < nums.size(); i++) {
         </div>
 
         <pre className="mt-1 bg-black rounded px-2 py-1.5 text-xs text-zinc-400 font-mono whitespace-pre-wrap max-h-12 overflow-y-auto">
-          {result.compile_output || result.stderr ||result.stdout|| "No output"}
+          { result?.stdout|| "No output"}
         </pre>
       </div>
     ))}
@@ -459,6 +501,22 @@ for(int i = 0; i < nums.size(); i++) {
 )}
 
 
+
+          {/* output submit code  */}
+
+
+          {submitResult&&(
+            <div className="mt-4 bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-zinc-400">Submission Result</span>
+                <span className={`text-sm font-medium ${
+                  submitResult.status==="accepted"
+                  ?"text-green-400"
+                  :"text-red-400"
+                }`}>{submitResult.status}</span>
+              </div>
+            </div>
+          )}
 
 
               </div>

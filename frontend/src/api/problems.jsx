@@ -56,7 +56,24 @@ async function RunCodeById(data,id){
 }
 
 
+async function SubmitCodeById(data,id){
 
+        const response=await axiosClient.post(`/submission/submit/${id}`,data)
+        return response;
+}
+
+
+
+async function ProblemSubmission(pid){
+        const response=await axiosClient.get(`/problem/submittedProblem/${pid}`)
+        return response.data;
+}
+
+
+async function bitgodsAI(data){
+        const response =await axiosClient.post(`/submission/ai`,data)
+        return response.data;
+}
 
 
 export {Fetchallproblem,
@@ -65,4 +82,7 @@ export {Fetchallproblem,
         UpdateProblemId,
         FetchProblemById,
         DeleteProblemById,
-        RunCodeById}
+        RunCodeById,
+        SubmitCodeById,
+        ProblemSubmission,
+        bitgodsAI}

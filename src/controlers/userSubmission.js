@@ -1,6 +1,10 @@
 import Problem from "../models/problem.js";
 import Submission from "../models/submission.js"
 import { getLanguageById, submitBatch, pollBatchResult } from "../utils/problemUtility.js";
+import Gemini from "../config/gemini.js";
+
+
+
 const submitCode=async(req,res)=>{
 
 try{
@@ -160,4 +164,49 @@ res.status(500).send(err.message);
 
 
 
-export {submitCode,runCode}
+const ai=async(req,res)=>{
+
+try{
+  
+   const {history}=req.body;
+   if(!history||!Array.isArray(history)){
+    return res.status(400).json({
+        message:"chat history is required"
+    })
+   }
+  
+   const response = await Gemini.models.generateContent({
+            model: "gemini-3.8-flash",
+
+            contents: history,
+
+            config: {
+                systemInstruction: `
+     You are BITGODS AI, a coding assistant.
+
+     Help the user solve programming problems.
+     Explain concepts clearly.
+     Give hints before giving complete solutions.
+     Analyze the user's code when provided.
+    IMP:-Keep answers concise and useful and dont answer any question outside coding domain.`,
+            },
+        });
+
+        return res.status(200).json({
+            message: response.text,
+        });
+
+    } catch (error) {
+        console.error("Gemini Error:", error);
+
+        return res.status(500).json({
+            error
+        });
+    }
+};
+
+
+
+
+
+export {submitCode,runCode,ai}

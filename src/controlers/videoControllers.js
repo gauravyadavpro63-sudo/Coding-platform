@@ -1,7 +1,7 @@
-import Video from "../models/video.js";
 
 
-// save video 
+
+// save video //
 
  const saveVideo=async(req ,res)=>{
     try{
@@ -24,6 +24,11 @@ import Video from "../models/video.js";
             message:"invalid video URL",
            })
         }
+
+        //query our own cloudinary account useing server credentials
+        const asset=await cloudinary.api.resource(publicId,{
+            resource_type:"video",
+        })
 
         const video =await Video.create({
             title:title.trim(),
@@ -75,5 +80,5 @@ import Video from "../models/video.js";
         }
     }
 
-    export {saveVideo,getVideos}
+    export {saveVideo,getVideos,uploadSignature}
 

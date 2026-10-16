@@ -52,3 +52,10 @@ export async function saveVideoMetadata({
 
    return data.video;
 }
+
+
+export async function getVideoById(id){
+    const response=await axiosClient.get(`/video/getvideo/${id}`)
+    return response.data.video;
+    
+}

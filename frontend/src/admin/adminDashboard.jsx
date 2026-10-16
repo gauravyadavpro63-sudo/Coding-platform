@@ -119,6 +119,35 @@ function AdminDashboard() {
             </div>
           </Link>
 
+
+
+          {/* video upload */}
+          <Link
+            to="/admin/uploadvideo"
+            className="group border border-zinc-800 rounded-2xl p-7 
+                       bg-zinc-950 hover:bg-zinc-900 
+                       hover:border-zinc-600 transition-all duration-300"
+          >
+            <div className="w-12 h-12 rounded-xl bg-zinc-900 
+                            flex items-center justify-center mb-6
+                            group-hover:bg-white group-hover:text-black
+                            transition">
+              <Trash2 size={22} />
+            </div>
+
+            <h2 className="text-xl font-semibold">
+              Video upload
+            </h2>
+
+            <p className="text-zinc-400 text-sm mt-3 leading-6">
+             upload video to your platforms
+            </p>
+
+            <div className="mt-6 text-sm font-medium">
+              Video Upload→
+            </div>
+          </Link>
+
         </div>
 
       </div>

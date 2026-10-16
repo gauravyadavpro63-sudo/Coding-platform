@@ -16,6 +16,7 @@ import UpdateProblem from "./admin/updateProblem.jsx"
 import DeleteProblem from "./admin/deleteProblem.jsx"
 import UpdateProblemId from "./admin/updateProblemId.jsx"
 import Solve from "./pages/Solve.jsx"
+import VideoUpload from "./admin/videoUpload.jsx"
 
 
 
@@ -56,6 +57,7 @@ function App(){
       <Route path="/admin/delete" element={<DeleteProblem/>}></Route>
       <Route path="/admin/update/:id" element={<UpdateProblemId/>}></Route>
       <Route path="/solve/:id" element={<Solve/>}></Route>
+      <Route path="/admin/uploadvideo" element={<VideoUpload/>}></Route>
       </Route>
 
       <Route path="/login" element={isAuthenticated?<Navigate to="/"></Navigate> :<Login/>}/>

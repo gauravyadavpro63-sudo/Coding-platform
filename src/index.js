@@ -11,8 +11,13 @@ import cors from "cors"
 
 const app=express();
 
+const allowedOrigins=[
+    "http://localhost:5173",
+    process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:allowedOrigins,
     credentials:true
 }))
 
@@ -32,8 +37,9 @@ const InitalizeConnection=async()=>{
         await Promise.all([Main(),redisClient.connect()]);
         console.log("data base and reddis connnected");
 
-        app.listen(process.env.PORT,()=>{
-            console.log("server listening at port 3000")
+        const PORT=process.env.PORT||3000
+        app.listen(PORT,"0.0.0.0",()=>{
+            console.log(`server listening at port ${PORT}`)
         })
     }
     catch(err){

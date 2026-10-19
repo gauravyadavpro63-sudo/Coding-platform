@@ -1,34 +1,60 @@
 import mongoose from "mongoose";
 
-const videoSchema = new mongoose.Schema({
+const videoSchema = new mongoose.Schema(
+  {
     title: {
-        type: String,
-        required: true,
-        trim: true,
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 120,
     },
+
+    description: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 2000,
+    },
+
+    uploadedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    cloudinaryPublicId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
+    cloudinaryAssetId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
     videoUrl: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
-    publicId: {
-        type: String,
-        required: true,
-        unique: true,
+
+    format: {
+      type: String,
+      required: true,
     },
+
+    bytes: {
+      type: Number,
+      required: true,
+    },
+
     duration: {
-        type: Number,
-        default: 0,
+      type: Number,
+      default: null,
     },
-    format:{
-        type:String,
-        required:true,
-    }
+  },
+  { timestamps: true }
+);
 
-},
-    { timestamps: true }
-)
-
-
-const Video = mongoose.model("Video", videoSchema);
-
-export default Video;
+export default mongoose.model("Video", videoSchema);
